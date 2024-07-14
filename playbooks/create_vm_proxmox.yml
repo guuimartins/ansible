@@ -1,0 +1,71 @@
+---
+- hosts: pvetst
+  become: true
+  vars:
+    api_user: "root@pam"
+    api_password: "lliege@123"
+    api_host: "pvetst"
+    template_vmid: "llgcloudtplv3"
+    new_vm_name: "createbyansible"
+    storage_id: "local-lvm"
+    proxmox_node: "pvetst"
+    environment: "{{ ansible_facts.env }}"
+    ansible_python_interpreter: "/root/proxmoxer-env/bin/python3"
+    defaults:
+      cores: 1
+      memory_size: 512
+      balloon: 0
+      ostype: "l26"
+      cpu: "host"
+      vcpus: 1
+      net_config:
+        name: "eth0"
+        bridge: "vmbr0"
+        model: "virtio"
+  tasks:
+    - name: Instalar requests
+      pip:
+        name: requests
+
+    - name: Gerar ID único para a VM
+      set_fact:
+        new_vm_id: "{{ '%04d' | format(ansible_date_time.epoch | int + 10000) }}"      
+
+    - name: Clonar template para nova VM
+      community.general.proxmox_kvm:
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_password }}"
+        api_host: "{{ api_host }}"
+        node: "{{ proxmox_node }}"
+        clone: "{{ template_vmid }}"
+        newid: "{{ new_vm_name | lower | replace('-', '_') | int }}"
+        full: yes
+        name: "{{ new_vm_name }}"
+        cores: "{{ defaults.cores }}"
+        memory: "{{ defaults.memory_size }}"
+        balloon: "{{ defaults.balloon }}"
+        vga: "serial0"
+        ostype: "{{ defaults.ostype }}"
+        cpu: "{{ defaults.cpu }}"
+        vcpus: "{{ defaults.vcpus }}"
+        bootdisk: "virtio0"
+        net:
+          name: "{{ defaults.net_config.name }}"
+          bridge: "{{ defaults.net_config.bridge }}"
+          model: "{{ defaults.net_config.model }}"
+        scsihw: "virtio-scsi-pci"
+        timeout: 600
+
+    - name: Debug new_vm_name variable
+      debug:
+        var: new_vm_name
+
+    - name: Iniciar nova VM
+      community.general.proxmox_kvm:
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_password }}"
+        api_host: "{{ api_host }}"
+        name: "{{ new_vm_name }}"
+        timeout: 600
+        state: started
+

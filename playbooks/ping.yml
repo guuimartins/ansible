@@ -1,0 +1,9 @@
+---
+- name: Ping usando sudo
+  hosts: myhosts  # Substitua com o nome do grupo ou host específico do seu inventário
+  become: yes  # Habilita o uso do sudo
+
+  tasks:
+    - name: Teste de ping
+      ping:
+
