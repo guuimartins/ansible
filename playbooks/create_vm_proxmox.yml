@@ -3,12 +3,12 @@
   become: true
   vars:
     api_user: "root@pam"
-    api_password: "lliege@123"
-    api_host: "pvetst"
-    template_vmid: "llgcloudtplv3"
-    new_vm_name: "createbyansible"
+    api_password: "PASSWORD_YOUR_PROXMOX"
+    api_host: "NAME_YOUR_CLUSTER"
+    template_vmid: "NAME_YOUR_TEMPLATE"
+    new_vm_name: "NAME_YOUR_VM"
     storage_id: "local-lvm"
-    proxmox_node: "pvetst"
+    proxmox_node: "NAME_YOUR_CLUSTER"
     environment: "{{ ansible_facts.env }}"
     ansible_python_interpreter: "/root/proxmoxer-env/bin/python3"
     defaults:
