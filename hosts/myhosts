@@ -1,4 +1,0 @@
-[myhosts]
-worker ansible_host=192.168.1.238 ansible_port=2259 ansible_user=lliege
-rancher ansible_host=192.168.1.239 ansible_port=2259 ansible_user=lliege
-
